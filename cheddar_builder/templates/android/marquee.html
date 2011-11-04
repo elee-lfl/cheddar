@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load djangogcc %}
+
+{% block title %}Android Marquee{% endblock %}
+
+{% block extra-js %}
+    <script src="{{ MEDIA_URL }}/js/goog/base.js"></script>
+    <script>
+        goog.require('goog.dom');
+        goog.require('goog.events');
+        goog.require('goog.style');
+        goog.require('goog.array');
+        goog.require('goog.fx');
+        goog.require('goog.fx.dom');
+        goog.require('goog.fx.AnimationQueue');
+    </script>
+    <script src="{{ MEDIA_URL }}/js/android/fx/css3fx.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/android/marquee.js"></script>
+
+{% endblock %}
+
+{% block extra-css %}
+   <link rel="stylesheet" href="{{ MEDIA_URL }}css/marquee.css" type="text/css" media="screen" charset="utf-8">
+{% endblock %}
+
+
+{% block content %}
+    <div id="marquee">
+        
+        <div id="feature_area">
+        </div>
+        
+        <div id="marquee_nav">
+            <ul>
+                <li class="marquee_icon_1"></li>
+                <li class="marquee_icon_2"></li>
+                <li class="marquee_icon_3"></li>
+                <li class="marquee_icon_4"></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
