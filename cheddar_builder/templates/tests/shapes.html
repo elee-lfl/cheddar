@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load compress %}
+{% block extra-js %}
+    {% compress js %}
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/base.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/canvassupport.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/graphics/transformable.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/graphics/colors.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/mouse.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/nodes/canvasnode.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/canvas.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/motion/tweening.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/math.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/nodes/drawable.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/graphics/rectangle.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/graphics/path.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}js/cheddar/graphics/circle.js"></script>
+	{% endcompress %}
+{% endblock %}
+
+
+{% block content %}
+    <canvas width="500" height="500" id="test_canvas">        
+    </canvas>
+    
+    
+    <script type="text/javascript">
+    GraphicsTest = cheddar.Class(CanvasNode, {
+        
+        initialize : function() {
+            CanvasNode.initialize.call(this);
+            
+            this.circle = new Circle(20, {fill:'#F00',x:20,y:20});
+            this.append(this.circle);
+        }
+    });
+    
+    var canvas = new Canvas(document.getElementById('test_canvas'));
+    var g = new GraphicsTest();
+    canvas.append(g);
+    
+    </script>
+{% endblock %}

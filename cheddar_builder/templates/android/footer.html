@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load compile_cheddar %}
+{% load compress %}
+{% if compress_js|lower == 'true' %} {% load compress %} {% endif %}
+
+
+{% block title %}Android Animations{% endblock %}
+
+{% block extra-css %}
+<style>
+	html{color:#000;background:#FFF}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,button,caption,cite,code,dfn,em,input,optgroup,option,select,strong,textarea,th,var{font:inherit}del,ins{text-decoration:none}li{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:baseline}sub{vertical-align:baseline}legend{color:#000}
+
+	#footer {
+		position:absolute;
+		bottom:0px;
+		width:100%;
+		border-top:1px solid #ebebeb;
+		background-color:#F2F2F2;
+		height:50px;
+	}
+	
+	#content {
+	    position:absolute;
+	    width:940px;
+	    margin:auto;
+        bottom:150px;
+        left:200px;
+	}
+	
+	.footer-content {
+		width:940px;
+		margin:auto;
+		margin-top:8px;
+	}
+	
+	#canvas-android {
+		position:absolute;
+		top:-47px;
+		margin-left:-75px;
+		float:left;
+	}
+</style>
+{% endblock %}
+
+{% block extra-js %}
+
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/base.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/canvassupport.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/transformable.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/colors.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/mouse.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/nodes/canvasnode.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/canvas.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/motion/tweening.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/math.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/nodes/drawable.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/rectangle.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/rectangle.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/path.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/graphics/circle.js"></script>
+	<script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}js/cheddar/motion/animationsequence.js"></script>
+
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="content">
+        <input type="button" value="Say Hi" onclick="javascript:animateFooter('wave');">
+        <!--<input type="button" value="Semaphore" onclick="javascript:animateFooter('semaphore');">-->
+    </div>
+        
+        
+
+	<div id="footer">
+		<div class="footer-content">
+			<canvas id="canvas-android" width="100" height="75"></canvas>
+			<img src="{{MEDIA_URL}}img/footer_holder.jpg" />
+		</div>
+	</div>
+	
+	
+	<script type="text/javascript">
+android = cheddar.Class(CanvasNode, {
+  
+  isAnimating : false,
+  
+  initialize : function() {
+      CanvasNode.initialize.call(this);
+      this.setProps({x:25,y:19});      
+      //Torso
+      this.torso = new CanvasNode();
+      this.torso1 = new Path(Path.compileSVGPath('M31.378,35.021c0,0.818-0.663,1.481-1.482,1.481H8.104c-0.818,0-1.483-0.663-1.483-1.481V15.583c0-0.818,0.665-1.481,1.483-1.481h21.792c0.818,0,1.482,0.663,1.482,1.481V35.021L31.378,35.021z'), {fill: '#99cc00'});
+      this.torso.append(this.torso1);
+      this.torso2 = new Rectangle(24, 10, {fill:"#9C0", x:6.5, y:14}) 
+      this.torso.append(this.torso2);
+      this.append(this.torso);
+      //Arms
+      this.r_arm = new CanvasNode({x:35,y:16});
+      this.r_arm_shape = new Path(Path.compileSVGPath("M38,27.75c0,1.456-1.181,2.638-2.638,2.638l0,0c-1.457,0-2.639-1.182-2.639-2.638V15.896c0-1.457,1.182-2.639,2.639-2.639l0,0c1.457,0,2.638,1.182,2.638,2.639V27.75z"), {fill:'#9C0', x:-35, y:-16});
+      this.r_arm.append(this.r_arm_shape);
+      
+      this.l_arm = new CanvasNode({x:3,y:16});
+      this.l_arm_path = new Path(Path.compileSVGPath("M5.276,27.75c0,1.456-1.181,2.638-2.638,2.638l0,0C1.181,30.388,0,29.206,0,27.75V15.896c0-1.457,1.181-2.639,2.638-2.639l0,0c1.457,0,2.638,1.182,2.638,2.639V27.75z"), {fill:'#9C0',x:-3,y:-16});
+      this.l_arm.append(this.l_arm_path);
+    this.append(this.r_arm, this.l_arm);
+	//Head
+	this.head = new CanvasNode({x:10,y:10,rotation:0});
+    this.head_base = new Path(Path.compileSVGPath("M6.701,12.642c0,0,0.274-10.498,12.299-10.461c11.913,0.037,12.299,10.461,12.299,10.461H6.701z"), {fill:'#9C0', x:-10,y:-10})
+	this.l_eye = new Circle(1.5,{x:4,y:-2, fill:'#FFF'});
+	this.r_eye = new Circle(1.5,{x:14,y:-2, fill:'#FFF'});
+	this.l_ant = new Path(Path.compileSVGPath("M13.194,3.592c0.043,0.062,0.178,0.042,0.301-0.046l0,0c0.121-0.085,0.185-0.205,0.141-0.268l-2.298-3.242c-0.044-0.062-0.178-0.042-0.299,0.044l0,0c-0.123,0.087-0.186,0.206-0.142,0.269L13.194,3.592z"), {fill:'#9C0',x:-10,y:-10});
+		this.r_ant = new Path(Path.compileSVGPath("M24.805,3.592c-0.043,0.062-0.178,0.042-0.301-0.046l0,0c-0.12-0.085-0.185-0.205-0.141-0.268l2.298-3.242c0.044-0.062,0.178-0.042,0.3,0.044l0,0c0.122,0.087,0.186,0.206,0.142,0.269L24.805,3.592z"), {fill:'#9C0',x:-10,y:-10});
+	this.head.append(this.head_base,this.l_eye, this.r_eye, this.l_ant, this.r_ant)
+	this.append(this.head);
+	//Legs
+	this.l_leg = new Path(Path.compileSVGPath("M26.729,43.092c0,1.457-1.181,2.638-2.639,2.638l0,0c-1.456,0-2.638-1.182-2.638-2.638V31.237c0-1.457,1.182-2.638,2.638-2.638l0,0c1.458,0,2.639,1.182,2.639,2.638V43.092z"), {fill:'#9C0'});
+	this.r_leg = new Path(Path.compileSVGPath("M16.547,43.092c0,1.457-1.181,2.638-2.638,2.638l0,0c-1.457,0-2.638-1.182-2.638-2.638V31.237c0-1.457,1.181-2.638,2.638-2.638l0,0c1.457,0,2.638,1.182,2.638,2.638V43.092z"), {fill:'#9C0'});
+	this.append(this.l_leg, this.r_leg);
+
+  }, 
+  
+  wave : function() {
+      
+      this.waveSequence = new cheddar.AniSequence(30,30)
+      this.waveSequence.addKeyframe(0, function(t) {
+          cheddar.tweener.addTween(t.head, {time:.25, rotation:-.1, transition:'linear'});
+          cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-3, transition:'linear'});
+      }, [this]);
+      this.waveSequence.addKeyframe(9, function(t) {
+            cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-2.5, transition:'linear'});
+      }, [this]);
+      this.waveSequence.addKeyframe(18, function(t) {
+            cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-3, transition:'linear'});
+      }, [this]);
+      this.waveSequence.addKeyframe(27, function(t) {
+            cheddar.tweener.addTween(t.head, {time:.25, rotation:0, y:10, transition:'linear'});
+            cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:0, transition:'linear'});
+        }, [this]);
+        
+      
+      this.waveSequence.start();
+      
+  },
+  
+  semaphore : function() {
+     this.lflag = new Flag();
+     this.lflag.setProps({rotation:3.14,y:26});
+     this.rflag = new Flag();
+     this.rflag.setProps({rotation:3.14,y:26});
+     this.semSeq = new cheddar.AniSequence(30,90);
+     this.semSeq.addKeyframe(0, function(t){ 
+        t.l_arm.zIndex = t.r_arm.zIndex = -1;
+        cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:-1.3});
+        cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:1.3});
+     }, [this])
+     this.semSeq.addKeyframe(10, function(t){ 
+         t.l_arm.zIndex = t.r_arm.zIndex = 1;
+         t.l_arm.append(t.lflag);
+         t.r_arm.append(t.rflag);
+         t.lflag.flip();
+         cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:0});
+         cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:0});
+     }, [this])
+     this.semSeq.addKeyframe(20, function(t) {
+         cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:3.14});
+         //cheddar.tweener.addTween(t.r_arm, {rotation:-Math.PI/2});
+     }, [this]);
+     this.semSeq.addKeyframe(30, function(t) {
+          cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:1.57});
+          cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-1.57});
+      }, [this]);
+      this.semSeq.addKeyframe(40, function(t) {
+           //cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:1.57});
+           cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-4.4});
+       }, [this]);
+      this.semSeq.addKeyframe(50, function(t) {
+        //cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:1.57});
+        cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-4.4});
+    }, [this]);
+    this.semSeq.addKeyframe(60, function(t) {
+         cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:.785});
+         //cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:-4.4});
+    }, [this]);
+    this.semSeq.addKeyframe(70, function(t) {
+          cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:3.14});
+          cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:0});
+    }, [this]);
+    this.semSeq.addKeyframe(80, function(t) {
+           cheddar.tweener.addTween(t.l_arm, {time:.25, rotation:0});
+           cheddar.tweener.addTween(t.r_arm, {time:.25, rotation:0});
+    }, [this]);
+    this.semSeq.start();
+     
+  }
+    
+})
+
+Flag = cheddar.Class(CanvasNode, {
+    initialize : function() {
+        CanvasNode.initialize.call(this);
+        this.pole = new Rectangle(1,16,{fill:"#666"});
+        this.flag = new Rectangle(14,10,{fill:"#666"});
+        this.append(this.flag, this.pole);
+    },
+    flip : function() {
+        if (this.scaleX == 1) {
+            cheddar.tweener.addTween(this, {time:.25, scaleX:-1});
+        } else {
+            cheddar.tweener.addTween(this, {time:.25, scaleX:1});
+        }
+    }
+    
+    
+})
+
+var elements = [];
+
+cheddar.initToCanvas = function(mclass, canvas, id) {
+	var element = document.getElementById(canvas);
+	var icanvas = new Canvas(element);
+	var new_class = new mclass();
+	new_class.canvas = icanvas;
+	icanvas.append(new_class);
+	elements[id] = new_class;
+}
+
+cheddar.initToCanvas(android, 'canvas-android', 'android');
+
+
+function animateFooter(type) {
+    if (type == 'wave'){
+        elements['android'].wave();
+    } else if (type == 'semaphore') {
+        elements['android'].semaphore();
+    }
+    
+}
+
+	</script>
+{% endblock %}
